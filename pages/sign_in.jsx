@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import axios from 'axios';
 
 import { errorHelper } from 'utils/tools';
 import { TextField, Button } from '@material-ui/core';
@@ -22,9 +23,18 @@ const SignIn = () => {
          password: yup.string().required('Password is required'),
       }),
       onSubmit: (values) => {
-         console.log(values);
+         submitHandler(values);
       },
    });
+
+   const submitHandler = async (values) => {
+      if (formType) {
+         const { data } = await axios.post('/api/auth', values);
+         console.log(data);
+      } else {
+         // sign in
+      }
+   };
 
    return (
       <div>
@@ -39,6 +49,7 @@ const SignIn = () => {
                      name="email"
                      label="Email"
                      variant="outlined"
+                     type="email"
                      {...formik.getFieldProps('email')}
                      {...errorHelper(formik, 'email')}
                   />
@@ -49,6 +60,7 @@ const SignIn = () => {
                      name="password"
                      label="Password"
                      variant="outlined"
+                     type="password"
                      {...formik.getFieldProps('password')}
                      {...errorHelper(formik, 'password')}
                   />
