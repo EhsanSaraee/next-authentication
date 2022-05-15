@@ -1,30 +1,12 @@
 import { getSession } from 'next-auth/client';
+import RouteGuard from 'utils/guards/RouteGuard';
 
 const Dashboard = () => {
    return (
-      <div>
+      <RouteGuard>
          <h1>Dashboard</h1>
-      </div>
+      </RouteGuard>
    );
-};
-
-export const getServerSideProps = async ({ req }) => {
-   const session = await getSession({ req });
-
-   if (!session) {
-      return {
-         redirect: {
-            destination: 'sign_in',
-            permanent: false,
-         },
-      };
-   }
-
-   return {
-      props: {
-         isAuthenticated: session,
-      },
-   };
 };
 
 export default Dashboard;
