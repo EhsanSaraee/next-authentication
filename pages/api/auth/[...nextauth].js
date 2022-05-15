@@ -5,41 +5,35 @@ import { checkPassword } from 'utils/tools';
 
 export default NextAuth({
    session: {
-      token: true,
+      jwt: true,
    },
    providers: [
       Providers.Credentials({
-         authorize: async (credentials) => {
-            // connect to db
+         async authorize(credentials) {
             const mongoClient = await connectToDB();
+            // valid
 
-            // check if user exists
-            const existUser = await mongoClient
-               .db()
-               .collection('users')
-               .findOne({
-                  email: credentials.email,
-               });
-
+            /// user check
+            const user = await mongoClient.db().collection('users').findOne({
+               email: credentials.email,
+            });
             if (!user) {
                mongoClient.close();
-               throw new Error('User does not exist. Please register first.');
+               throw new Error('Invalid email or password. Please try again.');
             }
 
-            // check if password is correct
+            /// check password
             const validPassword = await checkPassword(
                credentials.password,
                user.password
             );
-
             if (!validPassword) {
                mongoClient.close();
                throw new Error(
-                  'The password you entered is incorrect. Please try again.'
+                  'Invalid password. Please try again or reset your password.'
                );
             }
 
-            // close db connection
             mongoClient.close();
             return { email: user.email };
          },
