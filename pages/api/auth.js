@@ -11,9 +11,20 @@ const handler = async (req, res) => {
    } catch (error) {
       return res.status(500).json({ message: 'Something went wrong', error });
    }
-
+   // connect to db
    const mongoClient = await connectToDB();
 
+   // check if user exists
+   const existUser = await mongoClient
+      .db()
+      .collection('users')
+      .findOne({ email });
+
+   if (existUser) {
+      return res.status(400).json({ message: 'User already exist' });
+   }
+
+   // hash password
    try {
       const db = mongoClient.db();
       const hashedPassword = await hashPassword(password);
@@ -23,9 +34,10 @@ const handler = async (req, res) => {
       });
       res.status(200).json({ message: 'User created' });
    } catch (error) {
-      res.status(500).json({ message: 'Error creating user' });
+      return res.status(500).json({ message: 'Error creating user' });
    }
 
+   // close db connection
    mongoClient.close();
 };
 
