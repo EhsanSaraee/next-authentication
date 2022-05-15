@@ -1,4 +1,4 @@
-import { hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 
 export const errorHelper = (formik, value) => ({
    error: formik.errors[value] && formik.touched[value] ? true : false,
@@ -9,3 +9,6 @@ export const errorHelper = (formik, value) => ({
 });
 
 export const hashPassword = async (password) => await hash(password, 10);
+
+export const checkPassword = async (enteredPassword, hashedPassword) =>
+   await compare(enteredPassword, hashedPassword);

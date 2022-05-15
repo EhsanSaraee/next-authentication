@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
+import { signIn } from 'next-auth/client';
 
 import { errorHelper } from 'utils/tools';
 import { TextField, Button } from '@material-ui/core';
@@ -32,7 +33,12 @@ const SignIn = () => {
          const { data } = await axios.post('/api/auth', values);
          console.log(data);
       } else {
-         // sign in
+         const result = await signIn('credentials', {
+            redirect: false,
+            email: values.email,
+            password: values.password,
+         });
+         console.log(result);
       }
    };
 
